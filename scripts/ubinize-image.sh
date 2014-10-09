@@ -25,12 +25,16 @@ ubivol() {
 	echo "[$name]"
 	echo "mode=ubi"
 	echo "vol_id=$volid"
-	echo "vol_type=dynamic"
 	echo "vol_name=$name"
 	if [ "$image" ]; then
 		echo "image=$image"
 	else
 		echo "vol_size=1MiB"
+	fi
+	if [ "$name" = "rootfs" ]; then
+		echo "vol_type=static"
+	else
+		echo "vol_type=dynamic"
 	fi
 	if [ "$autoresize" ]; then
 		echo "vol_flags=autoresize"
