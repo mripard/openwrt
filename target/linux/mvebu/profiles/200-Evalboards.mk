@@ -5,6 +5,9 @@
 # See /LICENSE for more information.
 #
 
+EVALBOARDS_UBIFS_OPTS = -F -m 2048 -e 124KiB -c 4096 -U
+EVALBOARDS_UBI_OPTS = -m 2048 -p 128KiB -s 512 -O 2048
+
 define Profile/Evalboards
   NAME:=Evaluation / Development boards
   PACKAGES:= \

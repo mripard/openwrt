@@ -14,9 +14,6 @@ LOADADDR:=0x00008000
 
 JFFS2_BLOCKSIZE = 128k
 
-UBIFS_OPTS = -F -m 2048 -e 124KiB -c 4096 -U
-UBI_OPTS = -m 2048 -p 128KiB -s 512 -O 2048
-
 KDIR_TMP:=$(KDIR)/tmp
 
 
@@ -43,7 +40,7 @@ endef
 
 define Image/Build/squashfs
 	$(call prepare_generic_squashfs,$(KDIR)/root.squashfs)
-	$(foreach dtb,$(TARGET_DTBS),$(call Image/Build/UbinizeImage,$(dtb),,squashfs,$(UBI_OPTS));)
+	$(foreach dtb,$(TARGET_DTBS),$(call Image/Build/UbinizeImage,$(dtb),,squashfs,$($(call toupper,$(PROFILE))_UBI_OPTS));)
 	( \
 		dd if=$(KDIR)/uImage-armada-xp-mamba bs=3072k conv=sync; \
 		dd if=$(BIN_DIR)/$(IMG_PREFIX)-armada-xp-mamba-squashfs-ubinized.bin \

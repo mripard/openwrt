@@ -5,6 +5,9 @@
 # See /LICENSE for more information.
 #
 
+GENERIC_UBIFS_OPTS = -F -m 2048 -e 124KiB -c 4096 -U
+GENERIC_UBI_OPTS = -m 2048 -p 128KiB -s 512 -O 2048
+
 define Profile/Generic
   NAME:=Generic (default)
   PACKAGES:= \
