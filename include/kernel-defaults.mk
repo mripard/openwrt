@@ -100,16 +100,24 @@ define Kernel/SetNoInitramfs
 	echo 'CONFIG_INITRAMFS_SOURCE=""' >> $(LINUX_DIR)/.config
 endef
 
+DEFCONFIG_DIR = $(LINUX_DIR)/arch/$(LINUX_KARCH)/configs
+DEFCONFIG_NAME = openwrt_defconfig
+
 define Kernel/Configure/Default
-	$(LINUX_CONF_CMD) > $(LINUX_DIR)/.config.target
+	$(LINUX_CONF_CMD) > $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).target
 # copy CONFIG_KERNEL_* settings over to .config.target
-	awk '/^(#[[:space:]]+)?CONFIG_KERNEL/{sub("CONFIG_KERNEL_","CONFIG_");print}' $(TOPDIR)/.config >> $(LINUX_DIR)/.config.target
-	echo "# CONFIG_KALLSYMS_EXTRA_PASS is not set" >> $(LINUX_DIR)/.config.target
-	echo "# CONFIG_KALLSYMS_ALL is not set" >> $(LINUX_DIR)/.config.target
-	echo "# CONFIG_KALLSYMS_UNCOMPRESSED is not set" >> $(LINUX_DIR)/.config.target
-	echo "# CONFIG_KPROBES is not set" >> $(LINUX_DIR)/.config.target
-	$(SCRIPT_DIR)/metadata.pl kconfig $(TMP_DIR)/.packageinfo $(TOPDIR)/.config > $(LINUX_DIR)/.config.override
-	$(SCRIPT_DIR)/kconfig.pl 'm+' '+' $(LINUX_DIR)/.config.target /dev/null $(LINUX_DIR)/.config.override > $(LINUX_DIR)/.config
+	awk '/^(#[[:space:]]+)?CONFIG_KERNEL/{sub("CONFIG_KERNEL_","CONFIG_");print}' \
+		$(TOPDIR)/.config >> $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).target
+	echo "# CONFIG_KALLSYMS_EXTRA_PASS is not set" >> $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).target
+	echo "# CONFIG_KALLSYMS_ALL is not set" >> $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).target
+	echo "# CONFIG_KALLSYMS_UNCOMPRESSED is not set" >> $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).target
+	echo "# CONFIG_KPROBES is not set" >> $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).target
+	$(SCRIPT_DIR)/metadata.pl kconfig $(TMP_DIR)/.packageinfo $(TOPDIR)/.config > \
+		$(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).override
+	$(SCRIPT_DIR)/kconfig.pl 'm+' '+' $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).target \
+		 /dev/null $(DEFCONFIG_DIR)/$(DEFCONFIG_NAME).override > \
+		$(DEFCONFIG_DIR)/$(DEFCONFIG_NAME)
+	+$(MAKE) $(KERNEL_MAKEOPTS) $(DEFCONFIG_NAME)
 	$(call Kernel/SetNoInitramfs)
 	rm -rf $(KERNEL_BUILD_DIR)/modules
 	$(_SINGLE) [ -d $(LINUX_DIR)/user_headers ] || $(MAKE) $(KERNEL_MAKEOPTS) INSTALL_HDR_PATH=$(LINUX_DIR)/user_headers headers_install
