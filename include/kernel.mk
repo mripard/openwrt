@@ -84,6 +84,8 @@ else ifeq ($(ARCH),sh4)
   LINUX_KARCH := sh
 else ifeq ($(ARCH),i386)
   LINUX_KARCH := x86
+else ifeq ($(ARCH),x86_64)
+  LINUX_KARCH := x86
 else
   LINUX_KARCH := $(ARCH)
 endif
