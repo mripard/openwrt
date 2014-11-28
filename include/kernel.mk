@@ -64,12 +64,29 @@ endif
 
 ifneq (,$(findstring uml,$(BOARD)))
   LINUX_KARCH=um
+else ifeq ($(ARCH),aarch64)
+  LINUX_KARCH := arm64
+else ifeq ($(ARCH),aarch64_be)
+  LINUX_KARCH := arm64
+else ifeq ($(ARCH),armeb)
+  LINUX_KARCH := arm
+else ifeq ($(ARCH),mipsel)
+  LINUX_KARCH := mips
+else ifeq ($(ARCH),mips64)
+  LINUX_KARCH := mips
+else ifeq ($(ARCH),mips64el)
+  LINUX_KARCH := mips
+else ifeq ($(ARCH),sh2)
+  LINUX_KARCH := sh
+else ifeq ($(ARCH),sh3)
+  LINUX_KARCH := sh
+else ifeq ($(ARCH),sh4)
+  LINUX_KARCH := sh
+else ifeq ($(ARCH),i386)
+  LINUX_KARCH := x86
 else
-  ifeq (,$(LINUX_KARCH))
-    LINUX_KARCH=$(strip $(subst i386,x86,$(subst armeb,arm,$(subst mipsel,mips,$(subst mips64,mips,$(subst mips64el,mips,$(subst sh2,sh,$(subst sh3,sh,$(subst sh4,sh,$(subst aarch64,arm64,$(subst aarch64_be,arm64,$(ARCH))))))))))))
-  endif
+  LINUX_KARCH := $(ARCH)
 endif
-
 
 define KernelPackage/Defaults
   FILES:=
