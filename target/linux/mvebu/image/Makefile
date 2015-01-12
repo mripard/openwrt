@@ -55,6 +55,32 @@ define NANDProfile
 endef
 
 # $(1): Profile Name
+# $(2): DTB Name
+# $(3): Erase Block Size
+define NORProfile
+  define Image/BuildKernel/Profile/$(1)
+	$(call Image/Build/DTB,$(2))
+    ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+	$(call Image/Build/Profile,$(1)/Initramfs)
+    endif
+  endef
+
+  define Image/Build/Profile/$(1)/BuildSysupgrade
+	$(call Image/Build/SysupgradeNAND,$(2),$$(1),$(KDIR)/uImage-$(2))
+  endef
+
+  define Image/Build/Profile/$(1)/Initramfs
+	$(call Image/Build/DTB,$(2),-initramfs)
+  endef
+
+  define Image/Build/Profile/$(1)/squashfs
+	$(call Image/Build/UbinizeImage,$(2),,squashfs, -p $(3) -m 1)
+  endef
+
+  PROFILES_LIST += $(1)
+endef
+
+# $(1): Profile Name
 # $(2): Sub Profiles list
 define MultiProfile
   define Image/BuildKernel/Profile/$(1)
